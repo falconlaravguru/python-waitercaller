@@ -15,6 +15,8 @@
 
     <!-- Custom styles for this template -->
     <link href="{{url_for('static', filename='css/jumbotron.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='css/home.css')}}" rel="stylesheet">
+
   </head>
 
   <body>
@@ -78,9 +80,13 @@
             <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
           </div>
           <div class="col-md-4">
-            <h2>Heading</h2>
-            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+            <h2>Registration</h2>
+            <form class="form-inline my-2 my-lg-0" action="/register" method="POST">
+                <input class="form-control mr-sm-2 paddingtop18px" type="text" placeholder="E-Mail" aria-label="Register" name="email">
+                <input class="form-control mr-sm-2 paddingtop18px" type="text" placeholder="Password" aria-label="Register" name="password">
+                <input class="form-control mr-sm-2 paddingtop18px" type="text" placeholder="Confirm Password" aria-label="Register" name="con-password">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Register</button>
+            </form>
           </div>
         </div>
 
