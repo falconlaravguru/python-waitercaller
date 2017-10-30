@@ -15,6 +15,7 @@ from passwordhelper import PasswordHelper
 from bitlyhelper import BitlyHelper
 import datetime
 import dateparser
+from forms import RegisterForms
 
 app = Flask(__name__)
 app.secret_key='8XsrhOfJENLDehV4+cNv1+06qcd07khYRnq8HkULe1lKzcEOKgrrCNCgYz8Gh5uWBloEhYHetI9Zq+CMM+co2QCbDGvP/juPbWu'
@@ -28,7 +29,9 @@ BH = BitlyHelper()
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    registrationform = RegisterForms()
+    return render_template("home.html",
+    registrationform=registrationform)
 
 # Authentication Route
 
@@ -52,17 +55,16 @@ def logout():
 
 @app.route('/register', methods=['POST'])
 def register():
-    email=request.form.get('email')
-    pw1=request.form.get('password')
-    pw2=request.form.get('con-password')
-    if not pw1 == pw2:
-        return redirect(url_for('home'))
-    if DB.get_user(email):
-        return redirect(url_for('home'))
-    salt=PH.get_salt()
-    hashed=PH.get_hash(pw1+salt)
-    DB.add_user(email,salt,hashed)
-    return redirect(url_for('home'))
+    form = RegisterForms(request.form)
+    if form.validate():
+        if DB.get_user(form.email.data):
+            form.email.errors.append("Email address already registered")
+            return render_template('home.html', registrationform=form)
+        salt = PH.get_salt()
+        hashed = PH.get_hash(form.password2.data + salt)
+        DB.add_user(form.email.data, salt, hashed)
+        return render_template("home.html", registrationform=form,onloadmessage="Registration successful. Please log in.")
+    return render_template("home.html", registrationform=form)
 
 # Dashboard Route
 

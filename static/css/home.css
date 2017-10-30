@@ -2,3 +2,9 @@
 {
     padding-top: 18px;
 }
+
+ul.errors {
+    list-style-type: none;
+    padding: 0;
+    color: red;
+}

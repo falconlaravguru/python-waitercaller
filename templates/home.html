@@ -19,7 +19,9 @@
 
   </head>
 
-  <body>
+  {% block bodytag %}
+  <body {% if onloadmessage %} onload="alert('{{onloadmessage}}');" {% endif %}>
+  {% endblock %}
 
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <a class="navbar-brand" href="#">Navbar</a>
@@ -80,13 +82,50 @@
             <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
           </div>
           <div class="col-md-4">
-            <h2>Registration</h2>
-            <form class="form-inline my-2 my-lg-0" action="/register" method="POST">
-                <input class="form-control mr-sm-2 paddingtop18px" type="text" placeholder="E-Mail" aria-label="Register" name="email">
-                <input class="form-control mr-sm-2 paddingtop18px" type="text" placeholder="Password" aria-label="Register" name="password">
-                <input class="form-control mr-sm-2 paddingtop18px" type="text" placeholder="Confirm Password" aria-label="Register" name="con-password">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Register</button>
-            </form>
+            <h2>Register now</h2>
+            <form class="form-horizontal" action="/register" method="POST">
+            {{ registrationform.csrf_token }}
+                <div class="form-group">
+                    <div class="col-sm-9">
+                      {% if registrationform.email.errors %}
+                          <ul class="errors">
+                            {% for error in registrationform.email.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                          </ul>
+                      {% endif %}
+                      {{ registrationform.email(class="form-control",placeholder="Email Address" )}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-9">
+                      {% if registrationform.password.errors %}
+                        <ul class="errors">
+                          {% for error in registrationform.password.errors %}
+                          <li>{{ error }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                      {{ registrationform.password(class="form-control", placeholder="Password" )}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-9">
+                      {% if registrationform.password2.errors %}
+                        <ul class="errors">
+                          {% for error in registrationform.password2.errors %}
+                          <li>{{ error }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                      {{ registrationform.password2(class="form-control", placeholder="Confirm Password" )}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-9">
+                    {{ registrationform.submit(class="btn btn-primary btn-block btn-outline-success")}}
+                    </div>
+                </div>
           </div>
         </div>
 
