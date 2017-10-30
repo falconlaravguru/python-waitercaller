@@ -16,6 +16,7 @@ from bitlyhelper import BitlyHelper
 import datetime
 import dateparser
 from forms import RegisterForms
+from forms import LoginForm
 
 app = Flask(__name__)
 app.secret_key='8XsrhOfJENLDehV4+cNv1+06qcd07khYRnq8HkULe1lKzcEOKgrrCNCgYz8Gh5uWBloEhYHetI9Zq+CMM+co2QCbDGvP/juPbWu'
@@ -31,20 +32,21 @@ BH = BitlyHelper()
 def home():
     registrationform = RegisterForms()
     return render_template("home.html",
-    registrationform=registrationform)
+    loginform=LoginForm(), registrationform=registrationform)
 
 # Authentication Route
 
 @app.route('/login', methods=["POST"])
 def login():
-    email=request.form.get('user')
-    user_password=request.form.get('password')
-    user=DB.get_user(email)
-    if user and PH.validate_password(user_password, user['salt'],user['hashed']) :
-        user = User(email)
-        login_user(user)
-        return redirect(url_for('account'))
-    return home()
+    form = LoginForm(request.form)
+    if form.validate():
+        stored_user = DB.get_user(form.loginemail.data)
+        if stored_user and  PH.validate_password(form.loginpassword.data, stored_user['salt'], stored_user['hashed']):
+            user = User(form.loginemail.data)
+            login_user(user, remember=True)
+            return redirect(url_for('account'))
+        form.loginemail.errors.append("Email or password invalid")
+    return render_template("home.html", loginform=form,registrationform=RegisterForms())
 
 @app.route("/logout")
 def logout():
@@ -59,12 +61,12 @@ def register():
     if form.validate():
         if DB.get_user(form.email.data):
             form.email.errors.append("Email address already registered")
-            return render_template('home.html', registrationform=form)
+            return render_template('home.html', loginform=LoginForm(), registrationform=form)
         salt = PH.get_salt()
         hashed = PH.get_hash(form.password2.data + salt)
         DB.add_user(form.email.data, salt, hashed)
-        return render_template("home.html", registrationform=form,onloadmessage="Registration successful. Please log in.")
-    return render_template("home.html", registrationform=form)
+        return render_template("home.html", loginform=LoginForm(), registrationform=form,onloadmessage="Registration successful. Please log in.")
+    return render_template("home.html", loginform=LoginForm(), registrationform=form)
 
 # Dashboard Route
 
